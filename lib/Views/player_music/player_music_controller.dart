@@ -1,6 +1,10 @@
 
+import 'dart:math';
+
 import 'package:audioplayer/audioplayer.dart';
 import 'package:mobx/mobx.dart';
+import 'package:spotRafa/Modules/firebase/repositories/firestore-repository.dart';
+import 'package:spotRafa/Modules/player_music/Models/genero_model.dart';
 import 'package:spotRafa/Modules/player_music/Models/music_model.dart';
 
 part 'player_music_controller.g.dart';
@@ -8,21 +12,26 @@ part 'player_music_controller.g.dart';
 class PlayerMusicController = _PlayerMusicControllerBase with _$PlayerMusicController;
 
 abstract class _PlayerMusicControllerBase with Store {
-  
+
+  var musicasTocadasShuffle = List<int>();
+  var _firestore = FirestoreRepository();
+
   @observable
-  List<MusicModel> musicas = List<MusicModel>();
-  _PlayerMusicControllerBase(){
-    var music1 = MusicModel();
-    var music2 = MusicModel();
-    music1.url = 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/Axe%2FAXE%20BAHIA%20ONDA%20ONDA(ORIGINAL)%20(%20160kbps%20).mp3?alt=media&token=ed584e27-8d57-4125-becb-19b7bf2c49db';
-    music1.nome = 'Olha a Onda';
-    musicas.add(music1);
-    music2.url = 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/Rock-nacional%2FAnna%20Julia%20Letra%20(%20160kbps%20).mp3?alt=media&token=745d4486-e06d-411c-a405-f4ea6998aa9b';
-    music2.nome = 'Ana Julia';
-    musicas.add(music2);
+  bool shuffle = false;
+  @action
+  void activeShuffle({bool active}){
+    shuffle = active;
+    
+    if(!shuffle){
+      musicasTocadasShuffle = new List<int>();
+    }
   }
 
-  
+  @observable
+  List<MusicModel> musicas = List<MusicModel>();
+
+  @observable
+  List<GeneroModel> generos = List<GeneroModel>();
 
   @observable
   int faixa = 0;
@@ -56,7 +65,11 @@ abstract class _PlayerMusicControllerBase with Store {
 
   @action
   void changeTimeTiMusic(Duration d){
+    
     timeToMusic = d;
+    if(audioDuration == Duration.zero){
+      audioDuration = audioPlayer.duration;
+    }    
   }
 
   @action
@@ -73,9 +86,35 @@ abstract class _PlayerMusicControllerBase with Store {
 
   @action
   void nextMusic(){
-    faixa++;
+    var _sair = true;
+    var _fimPlaylist = false;
+    if(shuffle){
+      var rng = new Random(musicas.length);
+      while(_sair){
+        var _idFaixa = rng.nextInt(musicas.length);
+        var _musicaJaTocada = musicasTocadasShuffle.firstWhere((a) => a == _idFaixa, orElse: () => null);
+        if(_musicaJaTocada == null){
+           faixa = _idFaixa;
+           _sair = false;
+           musicasTocadasShuffle.add(_idFaixa);
+        }else{
+          if(musicasTocadasShuffle.length == musicas.length){
+            _sair = false;
+            _fimPlaylist = true;
+            musicasTocadasShuffle = List<int>();
+          }
+        }
+      }
+
+    }else{
+      faixa++;
+    }
+    
     stopMusic();
     audioDuration = Duration.zero;
+    if(!_fimPlaylist){
+      playMusic();
+    }
   }
 
   @action
@@ -90,11 +129,61 @@ abstract class _PlayerMusicControllerBase with Store {
     if(!musicPlaying){
       musicPlaying = true;
       await audioPlayer.play(musicas[faixa].url);
-      Future.delayed(Duration(milliseconds: 200), () => audioDuration = audioPlayer.duration); 
     }else{
       musicPlaying = false;
       await audioPlayer.pause();
     }
+  }
+  
+   @action
+  Future<void> getAllGeneros() async{
+    
+    var _generos = await _firestore.getGenerosMusica();
+    
+    var _listGeneros = List<GeneroModel>();
+    _generos.forEach((genero) {
+        
+      var _nomeGenero = genero == 'axe'
+                                  ? 'Axé'
+                                  : genero == 'flash-back'
+                                  ? 'Flash back'
+                                  : genero == 'funk'
+                                  ? 'Funk' 
+                                  : genero == 'rock-nacional' 
+                                  ? 'Rock Nacional' : '';
+       
+       var _urlGenero = genero == 'axe'
+                                  ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Faxe.png?alt=media&token=8110c569-2249-4442-aefa-278ff7b7c08b'
+                                  : genero == 'flash-back'
+                                  ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Fflashback.jpg?alt=media&token=39fc7827-b25d-4cee-8a14-2a5333d35653'
+                                  : genero == 'funk'
+                                  ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Ffunk2000.jpg?alt=media&token=e2e99ac1-f81c-4434-8f77-1331548d0d96' 
+                                  : genero == 'rock-nacional' 
+                                  ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Frocknacional.jpg?alt=media&token=f44756a2-e61e-4e13-903f-2e4e20b50eab' : '';
+      _listGeneros.add(GeneroModel(
+        nome: _nomeGenero,
+        imageurl: _urlGenero
+      ));
+     });
+     generos = _listGeneros;
+
+  }
+
+  @action
+  Future<void> getMusicas(String genero) async{
+
+    var _document = genero == 'Axé'
+                                  ? 'axe'
+                                  : genero == 'Flash back'
+                                  ? 'flash-back'
+                                  : genero == 'Funk'
+                                  ? 'funk' 
+                                  : genero == 'Rock Nacional' 
+                                  ? 'rock-nacional' : '';
+
+    var _musicas = await _firestore.getMusicas(_document); 
+    musicas = _musicas;                         
+
   }
 
 }

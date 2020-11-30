@@ -45,6 +45,21 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
           name: '_PlayerMusicControllerBase.hasPreviousMusic'))
       .value;
 
+  final _$shuffleAtom = Atom(name: '_PlayerMusicControllerBase.shuffle');
+
+  @override
+  bool get shuffle {
+    _$shuffleAtom.reportRead();
+    return super.shuffle;
+  }
+
+  @override
+  set shuffle(bool value) {
+    _$shuffleAtom.reportWrite(value, super.shuffle, () {
+      super.shuffle = value;
+    });
+  }
+
   final _$musicasAtom = Atom(name: '_PlayerMusicControllerBase.musicas');
 
   @override
@@ -57,6 +72,21 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
   set musicas(List<MusicModel> value) {
     _$musicasAtom.reportWrite(value, super.musicas, () {
       super.musicas = value;
+    });
+  }
+
+  final _$generosAtom = Atom(name: '_PlayerMusicControllerBase.generos');
+
+  @override
+  List<GeneroModel> get generos {
+    _$generosAtom.reportRead();
+    return super.generos;
+  }
+
+  @override
+  set generos(List<GeneroModel> value) {
+    _$generosAtom.reportWrite(value, super.generos, () {
+      super.generos = value;
     });
   }
 
@@ -147,8 +177,35 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
     return _$playMusicAsyncAction.run(() => super.playMusic());
   }
 
+  final _$getAllGenerosAsyncAction =
+      AsyncAction('_PlayerMusicControllerBase.getAllGeneros');
+
+  @override
+  Future<void> getAllGeneros() {
+    return _$getAllGenerosAsyncAction.run(() => super.getAllGeneros());
+  }
+
+  final _$getMusicasAsyncAction =
+      AsyncAction('_PlayerMusicControllerBase.getMusicas');
+
+  @override
+  Future<void> getMusicas(String genero) {
+    return _$getMusicasAsyncAction.run(() => super.getMusicas(genero));
+  }
+
   final _$_PlayerMusicControllerBaseActionController =
       ActionController(name: '_PlayerMusicControllerBase');
+
+  @override
+  void activeShuffle({bool active}) {
+    final _$actionInfo = _$_PlayerMusicControllerBaseActionController
+        .startAction(name: '_PlayerMusicControllerBase.activeShuffle');
+    try {
+      return super.activeShuffle(active: active);
+    } finally {
+      _$_PlayerMusicControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void changeTimeTiMusic(Duration d) {
@@ -208,7 +265,9 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
   @override
   String toString() {
     return '''
+shuffle: ${shuffle},
 musicas: ${musicas},
+generos: ${generos},
 faixa: ${faixa},
 audioDuration: ${audioDuration},
 timeToMusic: ${timeToMusic},
