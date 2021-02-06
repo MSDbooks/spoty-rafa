@@ -60,6 +60,22 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
     });
   }
 
+  final _$changingMusicAtom =
+      Atom(name: '_PlayerMusicControllerBase.changingMusic');
+
+  @override
+  bool get changingMusic {
+    _$changingMusicAtom.reportRead();
+    return super.changingMusic;
+  }
+
+  @override
+  set changingMusic(bool value) {
+    _$changingMusicAtom.reportWrite(value, super.changingMusic, () {
+      super.changingMusic = value;
+    });
+  }
+
   final _$musicasAtom = Atom(name: '_PlayerMusicControllerBase.musicas');
 
   @override
@@ -197,6 +213,17 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
       ActionController(name: '_PlayerMusicControllerBase');
 
   @override
+  void addOrRemoveQueue(int index) {
+    final _$actionInfo = _$_PlayerMusicControllerBaseActionController
+        .startAction(name: '_PlayerMusicControllerBase.addOrRemoveQueue');
+    try {
+      return super.addOrRemoveQueue(index);
+    } finally {
+      _$_PlayerMusicControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void activeShuffle({bool active}) {
     final _$actionInfo = _$_PlayerMusicControllerBaseActionController
         .startAction(name: '_PlayerMusicControllerBase.activeShuffle');
@@ -266,6 +293,7 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
   String toString() {
     return '''
 shuffle: ${shuffle},
+changingMusic: ${changingMusic},
 musicas: ${musicas},
 generos: ${generos},
 faixa: ${faixa},

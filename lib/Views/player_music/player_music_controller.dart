@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:audioplayer/audioplayer.dart';
 import 'package:mobx/mobx.dart';
+import 'package:spotRafa/Modules/firebase/repositories/firebase-auth-repository.dart';
 import 'package:spotRafa/Modules/firebase/repositories/firestore-repository.dart';
 import 'package:spotRafa/Modules/player_music/Models/genero_model.dart';
 import 'package:spotRafa/Modules/player_music/Models/music_model.dart';
@@ -13,8 +14,25 @@ class PlayerMusicController = _PlayerMusicControllerBase with _$PlayerMusicContr
 
 abstract class _PlayerMusicControllerBase with Store {
 
+  var _authenticated = false;
   var musicasTocadasShuffle = List<int>();
   var _firestore = FirestoreRepository();
+  var _firebaseAuth = FirebaseAuthRepository();
+
+  _PlayerMusicControllerBase() {
+    if(!_authenticated){
+      _firebaseAuth.signInSnonymousAsync().then((value) => _authenticated = value); 
+    }
+  }
+
+  @action
+  void addOrRemoveQueue(int index){
+    musicas[index].addqueue = !musicas[index].addqueue;
+
+    var _mapMusicsEncode = List<dynamic>.from(musicas.map((x) => x.toJson()));
+    musicas = MusicModel.fromJsonList(_mapMusicsEncode);
+    print('sdfsdf');
+  }
 
   @observable
   bool shuffle = false;
@@ -27,6 +45,9 @@ abstract class _PlayerMusicControllerBase with Store {
     }
   }
 
+  @observable
+  bool changingMusic = false;
+  
   @observable
   List<MusicModel> musicas = List<MusicModel>();
 
@@ -64,18 +85,32 @@ abstract class _PlayerMusicControllerBase with Store {
   AudioPlayer audioPlayer = AudioPlayer();
 
   @action
-  void changeTimeTiMusic(Duration d){
+  void changeTimeTiMusic(Duration d) {
     
     timeToMusic = d;
-    if(audioDuration == Duration.zero){
-      audioDuration = audioPlayer.duration;
-    }    
+    audioDuration = audioPlayer.duration;
+    
+    var _totalTime = int.parse((audioDuration.inMilliseconds * 0.95).toString().split('.')[0]);
+    if(!changingMusic && timeToMusic.inMilliseconds > _totalTime){
+      changingMusic = true;
+      Future.delayed(Duration(milliseconds: 5000)).then((value) {
+        if(changingMusic){
+          nextMusic();
+        }
+      });
+      
+    }else{
+      print('current time: ${timeToMusic.inMilliseconds}  |  Total time: ${((audioDuration.inMilliseconds * 0.9)).toString().split('.')[0]}');
+    }
   }
 
   @action
   void setimeMusic(double value){
     audioPlayer.seek(value * audioDuration.inMilliseconds);
+
   }
+
+
 
   @action
   void stopMusic(){
@@ -86,34 +121,39 @@ abstract class _PlayerMusicControllerBase with Store {
 
   @action
   void nextMusic(){
-    var _sair = true;
-    var _fimPlaylist = false;
-    if(shuffle){
-      var rng = new Random(musicas.length);
-      while(_sair){
-        var _idFaixa = rng.nextInt(musicas.length);
-        var _musicaJaTocada = musicasTocadasShuffle.firstWhere((a) => a == _idFaixa, orElse: () => null);
-        if(_musicaJaTocada == null){
-           faixa = _idFaixa;
-           _sair = false;
-           musicasTocadasShuffle.add(_idFaixa);
-        }else{
-          if(musicasTocadasShuffle.length == musicas.length){
+    if(faixa < musicas.length -1){
+      var _sair = true;
+      var _fimPlaylist = false;
+      if(shuffle){
+        var rng = new Random(musicas.length);
+        while(_sair){
+          var _idFaixa = rng.nextInt(musicas.length);
+          var _musicaJaTocada = musicasTocadasShuffle.firstWhere((a) => a == _idFaixa, orElse: () => null);
+          if(_musicaJaTocada == null){
+            faixa = _idFaixa;
             _sair = false;
-            _fimPlaylist = true;
-            musicasTocadasShuffle = List<int>();
+            musicasTocadasShuffle.add(_idFaixa);
+          }else{
+            if(musicasTocadasShuffle.length == musicas.length){
+              _sair = false;
+              _fimPlaylist = true;
+              musicasTocadasShuffle = List<int>();
+            }
           }
         }
+      }else{
+        faixa++;
       }
+      
+      stopMusic();
+      audioDuration = Duration.zero;
+      if(!_fimPlaylist){
+        playMusic();
+      }
+      changingMusic = false;
 
     }else{
-      faixa++;
-    }
-    
-    stopMusic();
-    audioDuration = Duration.zero;
-    if(!_fimPlaylist){
-      playMusic();
+      stopMusic();
     }
   }
 
