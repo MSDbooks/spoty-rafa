@@ -53,8 +53,17 @@ class _ListMusicPageState extends State<ListMusicPage> {
                   subtitle: Text(
                     '${widget.controller.musicas[index].banda}',
                   ),
-                  onTap: (){
-                    widget.controller.addOrRemoveQueue(index);
+                  onTap: () async{
+                    var _addQueue = await widget.controller.addOrRemoveQueue(index);
+                    var _message = _addQueue ? 'Adicionado a fila' : 'Removido da fila';
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                        _message,
+                        style: TextStyle(color: Colors.green[200]),
+                      ),
+                      duration: Duration(milliseconds: 500),
+                      backgroundColor: Colors.black,
+                    ));
                   },
                   trailing: widget.controller.musicas[index].addqueue 
                   ? Icon(

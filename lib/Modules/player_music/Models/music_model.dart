@@ -16,7 +16,7 @@ class MusicModel{
     nome: json["nome"] == null ? '' : json["nome"],
     url: json["url"] == null ? '' : json["url"],
     banda: json["banda"] == null ? '' : json["banda"],
-    addqueue: json["addqueue"],
+    addqueue: json["addqueue"] == null ? false : json["addqueue"],
   );
 
    Map<String, dynamic> toJson() => {

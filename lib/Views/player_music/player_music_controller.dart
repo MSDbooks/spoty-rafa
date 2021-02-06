@@ -14,6 +14,7 @@ class PlayerMusicController = _PlayerMusicControllerBase with _$PlayerMusicContr
 
 abstract class _PlayerMusicControllerBase with Store {
 
+  var _musicsAddQueue = List<int>();
   var _authenticated = false;
   var musicasTocadasShuffle = List<int>();
   var _firestore = FirestoreRepository();
@@ -25,13 +26,17 @@ abstract class _PlayerMusicControllerBase with Store {
     }
   }
 
-  @action
-  void addOrRemoveQueue(int index){
+   @action
+  Future<bool> addOrRemoveQueue(int index){
     musicas[index].addqueue = !musicas[index].addqueue;
-
+    if(musicas[index].addqueue){
+      _musicsAddQueue.add(index);
+    }else{
+      _musicsAddQueue.removeWhere((musicIndex) =>  musicIndex == index);
+    }
     var _mapMusicsEncode = List<dynamic>.from(musicas.map((x) => x.toJson()));
     musicas = MusicModel.fromJsonList(_mapMusicsEncode);
-    print('sdfsdf');
+    return Future.value(musicas[index].addqueue);
   }
 
   @observable

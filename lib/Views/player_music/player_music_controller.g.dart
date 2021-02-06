@@ -213,7 +213,7 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
       ActionController(name: '_PlayerMusicControllerBase');
 
   @override
-  void addOrRemoveQueue(int index) {
+  Future<bool> addOrRemoveQueue(int index) {
     final _$actionInfo = _$_PlayerMusicControllerBaseActionController
         .startAction(name: '_PlayerMusicControllerBase.addOrRemoveQueue');
     try {
