@@ -5,6 +5,7 @@
 
 # Build android
 - flutter build appbundle
+- flutter build apkflutter build apk
 
 # Mobx Generate
 - flutter pub run build_runner build
