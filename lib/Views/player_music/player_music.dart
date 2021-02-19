@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:seekbar/seekbar.dart';
@@ -19,6 +20,7 @@ class _PlayerMusicState extends State<PlayerMusic> {
 
   double _appWidth;
   double _appHeight;
+  Timer _onStoppedTyping;
   PlayerMusicController _controller;
   @override
   void initState() {
@@ -35,6 +37,17 @@ class _PlayerMusicState extends State<PlayerMusic> {
     _controller.stopMusic();
     super.dispose();
   }
+
+  void _setTimeMusic(double _value ) {
+     
+    _onStoppedTyping?.cancel();
+    print('time: $_value');
+      
+    const duration = Duration(milliseconds:800); 
+    _onStoppedTyping = new Timer(duration, () => _controller.setimeMusic(_value));
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +161,7 @@ class _PlayerMusicState extends State<PlayerMusic> {
                 value: _controller.progressDuration,
                 onStartTrackingTouch:(){},
                 onProgressChanged: (value){
-                  _controller.setimeMusic(value);
+                  _setTimeMusic(value);
                 },
               ),
             ),
