@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:seekbar/seekbar.dart';
 import 'package:spotRafa/Modules/player_music/Models/genero_model.dart';
+import 'package:spotRafa/Views/list_music/list_music_page.dart';
 import 'package:spotRafa/Views/player_music/player_music_controller.dart';
 
 class PlayerMusic extends StatefulWidget {
@@ -18,9 +20,8 @@ class _PlayerMusicState extends State<PlayerMusic> {
 
   double _appWidth;
   double _appHeight;
+  Timer _onStoppedTyping;
   PlayerMusicController _controller;
-  bool _shuffer = false;
-
   @override
   void initState() {
     super.initState();
@@ -28,9 +29,6 @@ class _PlayerMusicState extends State<PlayerMusic> {
     _controller.getMusicas(widget.genero.nome);
     _controller.audioPlayer.onAudioPositionChanged.listen((d){
       _controller.changeTimeTiMusic(d);
-      if(_controller.getTotalTime == _controller.getTimeToMusic){
-         _controller.nextMusic();
-      }
     });
   }
 
@@ -38,6 +36,16 @@ class _PlayerMusicState extends State<PlayerMusic> {
   void dispose() {
     _controller.stopMusic();
     super.dispose();
+  }
+
+  void _setTimeMusic(double _value ) {
+     
+    _onStoppedTyping?.cancel();
+    print('time: $_value');
+      
+    const duration = Duration(milliseconds:800); 
+    _onStoppedTyping = new Timer(duration, () => _controller.setimeMusic(_value));
+
   }
 
 
@@ -48,7 +56,27 @@ class _PlayerMusicState extends State<PlayerMusic> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Spoty Rafa ;)'),
+        title: RichText(
+                text: TextSpan(children: [
+                  TextSpan(
+                    text: "Spoty",
+                    style: TextStyle(
+                      color: Colors.green[400],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25,
+                    ),
+                  ),
+                  TextSpan(
+                    text: "Rafa ;)",
+                    style: TextStyle(
+                      color: Colors.pink,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ], 
+              ),
+            ),
         actions: [
            IconButton(
             icon: const Icon(Icons.more_vert),
@@ -133,7 +161,7 @@ class _PlayerMusicState extends State<PlayerMusic> {
                 value: _controller.progressDuration,
                 onStartTrackingTouch:(){},
                 onProgressChanged: (value){
-                  _controller.setimeMusic(value);
+                  _setTimeMusic(value);
                 },
               ),
             ),
@@ -220,7 +248,14 @@ class _PlayerMusicState extends State<PlayerMusic> {
               flex: 2,
                 child: IconButton(
                 icon: Icon(Icons.list), 
-                onPressed: null
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ListMusicPage(genre: widget.genero, controller: _controller)
+                    )
+                  );
+                }
               ),
             ),  
           ],
@@ -228,6 +263,4 @@ class _PlayerMusicState extends State<PlayerMusic> {
       ),
     );
   }
-
-
 }

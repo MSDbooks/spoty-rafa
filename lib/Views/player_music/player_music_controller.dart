@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:audioplayer/audioplayer.dart';
 import 'package:mobx/mobx.dart';
+import 'package:spotRafa/Modules/firebase/repositories/firebase-auth-repository.dart';
 import 'package:spotRafa/Modules/firebase/repositories/firestore-repository.dart';
 import 'package:spotRafa/Modules/player_music/Models/genero_model.dart';
 import 'package:spotRafa/Modules/player_music/Models/music_model.dart';
@@ -13,8 +14,30 @@ class PlayerMusicController = _PlayerMusicControllerBase with _$PlayerMusicContr
 
 abstract class _PlayerMusicControllerBase with Store {
 
+  var _musicsAddQueue = List<int>();
+  var _authenticated = false;
   var musicasTocadasShuffle = List<int>();
   var _firestore = FirestoreRepository();
+  var _firebaseAuth = FirebaseAuthRepository();
+
+  _PlayerMusicControllerBase() {
+    if(!_authenticated){
+      _firebaseAuth.signInSnonymousAsync().then((value) => _authenticated = value); 
+    }
+  }
+
+   @action
+  Future<bool> addOrRemoveQueue(int index){
+    musicas[index].addqueue = !musicas[index].addqueue;
+    if(musicas[index].addqueue){
+      _musicsAddQueue.add(index);
+    }else{
+      _musicsAddQueue.removeWhere((musicIndex) =>  musicIndex == index);
+    }
+    var _mapMusicsEncode = List<dynamic>.from(musicas.map((x) => x.toJson()));
+    musicas = MusicModel.fromJsonList(_mapMusicsEncode);
+    return Future.value(musicas[index].addqueue);
+  }
 
   @observable
   bool shuffle = false;
@@ -28,6 +51,9 @@ abstract class _PlayerMusicControllerBase with Store {
   }
 
   @observable
+  bool changingMusic = false;
+  
+  @observable
   List<MusicModel> musicas = List<MusicModel>();
 
   @observable
@@ -35,6 +61,8 @@ abstract class _PlayerMusicControllerBase with Store {
 
   @observable
   int faixa = 0;
+  @observable
+  int faixaFila = -1;
 
   @observable
   Duration audioDuration = Duration();
@@ -64,18 +92,29 @@ abstract class _PlayerMusicControllerBase with Store {
   AudioPlayer audioPlayer = AudioPlayer();
 
   @action
-  void changeTimeTiMusic(Duration d){
+  void changeTimeTiMusic(Duration d) {
     
     timeToMusic = d;
-    if(audioDuration == Duration.zero){
-      audioDuration = audioPlayer.duration;
-    }    
+    audioDuration = audioPlayer.duration;
+    
+    var _totalTime = int.parse((audioDuration.inMilliseconds * 0.95).toString().split('.')[0]);
+    if(!changingMusic && timeToMusic.inMilliseconds > _totalTime){
+      changingMusic = true;
+      Future.delayed(Duration(milliseconds: 5000)).then((value) {
+        if(changingMusic){
+          nextMusic();
+        }
+      });
+      
+    }
   }
 
   @action
   void setimeMusic(double value){
-    audioPlayer.seek(value * audioDuration.inMilliseconds);
+    audioPlayer.seek(value * audioDuration.inSeconds);
   }
+
+
 
   @action
   void stopMusic(){
@@ -86,39 +125,64 @@ abstract class _PlayerMusicControllerBase with Store {
 
   @action
   void nextMusic(){
-    var _sair = true;
-    var _fimPlaylist = false;
-    if(shuffle){
-      var rng = new Random(musicas.length);
-      while(_sair){
-        var _idFaixa = rng.nextInt(musicas.length);
-        var _musicaJaTocada = musicasTocadasShuffle.firstWhere((a) => a == _idFaixa, orElse: () => null);
-        if(_musicaJaTocada == null){
-           faixa = _idFaixa;
-           _sair = false;
-           musicasTocadasShuffle.add(_idFaixa);
-        }else{
-          if(musicasTocadasShuffle.length == musicas.length){
-            _sair = false;
-            _fimPlaylist = true;
-            musicasTocadasShuffle = List<int>();
-          }
-        }
-      }
 
-    }else{
-      faixa++;
-    }
-    
     stopMusic();
     audioDuration = Duration.zero;
-    if(!_fimPlaylist){
+
+    if(_musicsAddQueue.length > 0){
+      
+      if(faixaFila == -1){
+         faixaFila = faixa;
+      }
+
+      faixa = _musicsAddQueue.first;
+      musicas[_musicsAddQueue.first].addqueue = false;
+      _musicsAddQueue.removeWhere((musicIndex) =>  musicIndex == _musicsAddQueue.first);
+      
       playMusic();
+      changingMusic = false;
+
+    }else{
+       if(faixaFila != -1){
+         faixa = faixaFila;
+         faixaFila = -1;
+       }
+       if(faixa < musicas.length -1){
+        var _fimPlaylist = false;
+        if(shuffle){
+          var _sair = true;
+          var rng = new Random(musicas.length);
+          while(_sair){
+            var _idFaixa = rng.nextInt(musicas.length);
+            var _musicaJaTocada = musicasTocadasShuffle.firstWhere((a) => a == _idFaixa, orElse: () => null);
+            if(_musicaJaTocada == null){
+              faixa = _idFaixa;
+              _sair = false;
+              musicasTocadasShuffle.add(_idFaixa);
+            }else{
+              if(musicasTocadasShuffle.length == musicas.length){
+                _sair = false;
+                _fimPlaylist = true;
+                musicasTocadasShuffle = List<int>();
+              }
+            }
+          }
+        }else{
+          faixa++;
+        }
+        
+        if(!_fimPlaylist){
+          playMusic();
+        }
+        changingMusic = false;
+
+      }
     }
   }
 
   @action
   void previousMusic(){
+
     faixa--;
     stopMusic();
     audioDuration = Duration.zero;
@@ -150,7 +214,10 @@ abstract class _PlayerMusicControllerBase with Store {
                                   : genero == 'funk'
                                   ? 'Funk' 
                                   : genero == 'rock-nacional' 
-                                  ? 'Rock Nacional' : '';
+                                  ? 'Rock Nacional' 
+                                  : genero == 'popero'
+                                  ? 'Popero' 
+                                  : 'diversos';
        
        var _urlGenero = genero == 'axe'
                                   ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Faxe.png?alt=media&token=8110c569-2249-4442-aefa-278ff7b7c08b'
@@ -159,7 +226,10 @@ abstract class _PlayerMusicControllerBase with Store {
                                   : genero == 'funk'
                                   ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Ffunk2000.jpg?alt=media&token=e2e99ac1-f81c-4434-8f77-1331548d0d96' 
                                   : genero == 'rock-nacional' 
-                                  ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Frocknacional.jpg?alt=media&token=f44756a2-e61e-4e13-903f-2e4e20b50eab' : '';
+                                  ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Frocknacional.jpg?alt=media&token=f44756a2-e61e-4e13-903f-2e4e20b50eab' 
+                                  : genero == 'popero' 
+                                  ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Fpopero.jpg?alt=media&token=266646b3-0c93-4b67-b7f8-88f6ac01ae15' 
+                                  : 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Fmusicas.png?alt=media&token=4cc1788f-34ff-4e14-8ab8-ab9b40fc4d39';
       _listGeneros.add(GeneroModel(
         nome: _nomeGenero,
         imageurl: _urlGenero
@@ -179,7 +249,9 @@ abstract class _PlayerMusicControllerBase with Store {
                                   : genero == 'Funk'
                                   ? 'funk' 
                                   : genero == 'Rock Nacional' 
-                                  ? 'rock-nacional' : '';
+                                  ? 'rock-nacional' 
+                                  : genero == 'Popero' 
+                                  ? 'popero' : 'diversos';
 
     var _musicas = await _firestore.getMusicas(_document); 
     musicas = _musicas;                         
