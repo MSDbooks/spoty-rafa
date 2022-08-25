@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "167336544082",
+    "firebase_url": "https://spoty-rafa.firebaseio.com",
+    "project_id": "spoty-rafa",
+    "storage_bucket": "spoty-rafa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:167336544082:android:1681001463b4f4f9d59c8b",
+        "android_client_info": {
+          "package_name": "com.example.spotRafa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "167336544082-ovkplg6uiqela2a4rj8ipq9nb9gc8lg4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnqKRXkocpKMKmzTWiZUBrt7QzeJ9Hxvk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "167336544082-ovkplg6uiqela2a4rj8ipq9nb9gc8lg4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
