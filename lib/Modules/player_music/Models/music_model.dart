@@ -28,7 +28,7 @@ class MusicModel{
 
 
   static List<MusicModel> fromJsonList(dynamic jsonResponse) {
-      var result = List<MusicModel>();
+      var result = <MusicModel>[];
       jsonResponse.forEach((item) {
         result.add(MusicModel.fromJson(item));
       });
