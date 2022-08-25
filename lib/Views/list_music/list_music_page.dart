@@ -56,7 +56,7 @@ class _ListMusicPageState extends State<ListMusicPage> {
                   onTap: () async{
                     var _addQueue = await widget.controller.addOrRemoveQueue(index);
                     var _message = _addQueue ? 'Adicionado a fila' : 'Removido da fila';
-                    Scaffold.of(context).showSnackBar(SnackBar(
+                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text(
                         _message,
                         style: TextStyle(color: Colors.green[200]),

@@ -14,9 +14,9 @@ class PlayerMusicController = _PlayerMusicControllerBase with _$PlayerMusicContr
 
 abstract class _PlayerMusicControllerBase with Store {
 
-  var _musicsAddQueue = List<int>();
+  var _musicsAddQueue = <int>[];
   var _authenticated = false;
-  var musicasTocadasShuffle = List<int>();
+  var musicasTocadasShuffle = <int>[];
   var _firestore = FirestoreRepository();
   var _firebaseAuth = FirebaseAuthRepository();
 
@@ -46,7 +46,7 @@ abstract class _PlayerMusicControllerBase with Store {
     shuffle = active;
     
     if(!shuffle){
-      musicasTocadasShuffle = new List<int>();
+      musicasTocadasShuffle = <int>[];
     }
   }
 
@@ -54,10 +54,10 @@ abstract class _PlayerMusicControllerBase with Store {
   bool changingMusic = false;
   
   @observable
-  List<MusicModel> musicas = List<MusicModel>();
+  List<MusicModel> musicas = <MusicModel>[];
 
   @observable
-  List<GeneroModel> generos = List<GeneroModel>();
+  List<GeneroModel> generos = <GeneroModel>[];
 
   @observable
   int faixa = 0;
@@ -163,7 +163,7 @@ abstract class _PlayerMusicControllerBase with Store {
               if(musicasTocadasShuffle.length == musicas.length){
                 _sair = false;
                 _fimPlaylist = true;
-                musicasTocadasShuffle = List<int>();
+                musicasTocadasShuffle = <int>[];
               }
             }
           }
@@ -204,7 +204,7 @@ abstract class _PlayerMusicControllerBase with Store {
     
     var _generos = await _firestore.getGenerosMusica();
     
-    var _listGeneros = List<GeneroModel>();
+    var _listGeneros = <GeneroModel>[];
     _generos.forEach((genero) {
         
       var _nomeGenero = genero == 'axe'

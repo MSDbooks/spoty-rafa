@@ -205,7 +205,7 @@ class _PlayerMusicState extends State<PlayerMusic> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
-                      child: FlatButton(
+                      child: TextButton(
                         child: Icon(Icons.skip_previous, size: 40),
                         onPressed: () {
                           if(_controller.hasPreviousMusic){
@@ -216,7 +216,7 @@ class _PlayerMusicState extends State<PlayerMusic> {
                     ),
                     Observer(
                         builder: (_){
-                          return FlatButton(
+                          return TextButton(
                             child: Icon(
                             _controller.musicPlaying 
                             ? Icons.pause_circle_outline
@@ -229,7 +229,7 @@ class _PlayerMusicState extends State<PlayerMusic> {
                         );
                       },
                     ),
-                    FlatButton(
+                    TextButton(
                       child: Icon(
                         Icons.skip_next, 
                         size: 40
