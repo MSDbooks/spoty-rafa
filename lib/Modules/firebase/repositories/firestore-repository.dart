@@ -6,12 +6,12 @@ class FirestoreRepository{
   final FirestoreInstanceProvider _instance = FirestoreInstanceProvider();
 
   Future<List<String>> getGenerosMusica() async {
-    var _list = List<String>();
+    var _list = <String>[];
     await _instance.firestore.collection('genero-musical')
-      .getDocuments()
-      .then((onValue) {
-        onValue.documents.forEach((item) {
-          var _nome = item.documentID;
+      .get()
+      .then((snapshots) {
+        snapshots.docs.forEach((item) {
+          var _nome = item.id;
           _list.add(_nome);
         });
       });
@@ -19,12 +19,12 @@ class FirestoreRepository{
   }
 
     Future<List<MusicModel>> getMusicas(String document) async {
-    var _list = List<MusicModel>();
+    var _list = <MusicModel>[];
     await _instance.firestore.collection('genero-musical/$document/musicas')
-      .getDocuments()
-      .then((onValue) {
-        onValue.documents.forEach((item) {
-          var _itemModel = MusicModel.fromJson(item.data);
+      .get()
+      .then((snapshots) {
+        snapshots.docs.forEach((item) {
+          var _itemModel = MusicModel.fromJson(item.data());
           _list.add(_itemModel);
         });
       });

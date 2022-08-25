@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreInstanceProvider {
 
-  final Firestore firestore = Firestore();
+  final firestore = FirebaseFirestore.instance;
 
   static FirestoreInstanceProvider _instanceSingleton;
 
