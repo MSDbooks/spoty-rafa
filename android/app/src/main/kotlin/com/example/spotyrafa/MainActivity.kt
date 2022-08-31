@@ -1,4 +1,4 @@
-package com.example.spotyrafa
+package com.example.spotRafa
 
 import io.flutter.embedding.android.FlutterActivity
 

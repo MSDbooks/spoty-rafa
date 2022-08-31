@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.spotyrafa">
+    package="com.example.spotRafa">
    <application
         android:label="spotyrafa"
         android:name="${applicationName}"
