@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:seekbar/seekbar.dart';
 import 'package:spotRafa/Views/list_music/list_music_page.dart';
 import 'package:spotRafa/Views/player_music/player_music_controller.dart';
 
+import '../../Modules/components/seekbar/seekbar.dart';
 import '../../Modules/firebase/models/musical_genre_model.dart';
 
 class PlayerMusic extends StatefulWidget {

@@ -31,7 +31,7 @@ dependencies:
   mobx: 2.0.7+5
   flutter_mobx: 2.0.6+1
   audioplayer: 0.8.1
-  seekbar: 0.0.2
+  #seekbar: 0.0.2
   firebase_core: 1.21.0
   cloud_firestore: 3.4.5
   firebase_auth: 3.6.4

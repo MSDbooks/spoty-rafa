@@ -1,12 +1,12 @@
 
 import 'dart:math';
-
 import 'package:audioplayer/audioplayer.dart';
 import 'package:mobx/mobx.dart';
 import 'package:spotRafa/Modules/firebase/repositories/firebase-auth-repository.dart';
 import 'package:spotRafa/Modules/firebase/repositories/firestore-repository.dart';
 import 'package:spotRafa/Modules/player_music/Models/music_model.dart';
 
+//import '../../Modules/components/audio_player/audio_player.dart';
 import '../../Modules/firebase/models/musical_genre_model.dart';
 
 part 'player_music_controller.g.dart';
@@ -193,7 +193,7 @@ abstract class _PlayerMusicControllerBase with Store {
   Future<void> playMusic() async {
     if(!musicPlaying){
       musicPlaying = true;
-      await audioPlayer.play(musicas[faixa].url);
+      await audioPlayer.play(musicas[faixa].url!);
     }else{
       musicPlaying = false;
       await audioPlayer.pause();
