@@ -11,6 +11,7 @@ class FirestoreRepository{
     
     var _list = <MusicalGenreModel>[];
     await _instance.firestore.collection('genero-musical')
+    .where("active", isEqualTo: true )
       .get()
       .then((snapshots) {
         snapshots.docs.forEach((item) {
