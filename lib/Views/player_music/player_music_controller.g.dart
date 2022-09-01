@@ -6,38 +6,38 @@ part of 'player_music_controller.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
-  Computed<String> _$getTimeToMusicComputed;
+  Computed<String>? _$getTimeToMusicComputed;
 
   @override
   String get getTimeToMusic =>
       (_$getTimeToMusicComputed ??= Computed<String>(() => super.getTimeToMusic,
               name: '_PlayerMusicControllerBase.getTimeToMusic'))
           .value;
-  Computed<String> _$getTotalTimeComputed;
+  Computed<String>? _$getTotalTimeComputed;
 
   @override
   String get getTotalTime =>
       (_$getTotalTimeComputed ??= Computed<String>(() => super.getTotalTime,
               name: '_PlayerMusicControllerBase.getTotalTime'))
           .value;
-  Computed<double> _$progressDurationComputed;
+  Computed<double>? _$progressDurationComputed;
 
   @override
   double get progressDuration => (_$progressDurationComputed ??=
           Computed<double>(() => super.progressDuration,
               name: '_PlayerMusicControllerBase.progressDuration'))
       .value;
-  Computed<bool> _$hasNextMusicComputed;
+  Computed<bool>? _$hasNextMusicComputed;
 
   @override
   bool get hasNextMusic =>
       (_$hasNextMusicComputed ??= Computed<bool>(() => super.hasNextMusic,
               name: '_PlayerMusicControllerBase.hasNextMusic'))
           .value;
-  Computed<bool> _$hasPreviousMusicComputed;
+  Computed<bool>? _$hasPreviousMusicComputed;
 
   @override
   bool get hasPreviousMusic => (_$hasPreviousMusicComputed ??= Computed<bool>(
@@ -45,7 +45,8 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
           name: '_PlayerMusicControllerBase.hasPreviousMusic'))
       .value;
 
-  final _$shuffleAtom = Atom(name: '_PlayerMusicControllerBase.shuffle');
+  late final _$shuffleAtom =
+      Atom(name: '_PlayerMusicControllerBase.shuffle', context: context);
 
   @override
   bool get shuffle {
@@ -60,8 +61,8 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
     });
   }
 
-  final _$changingMusicAtom =
-      Atom(name: '_PlayerMusicControllerBase.changingMusic');
+  late final _$changingMusicAtom =
+      Atom(name: '_PlayerMusicControllerBase.changingMusic', context: context);
 
   @override
   bool get changingMusic {
@@ -76,7 +77,8 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
     });
   }
 
-  final _$musicasAtom = Atom(name: '_PlayerMusicControllerBase.musicas');
+  late final _$musicasAtom =
+      Atom(name: '_PlayerMusicControllerBase.musicas', context: context);
 
   @override
   List<MusicModel> get musicas {
@@ -91,22 +93,24 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
     });
   }
 
-  final _$generosAtom = Atom(name: '_PlayerMusicControllerBase.generos');
+  late final _$genresAtom =
+      Atom(name: '_PlayerMusicControllerBase.genres', context: context);
 
   @override
-  List<GeneroModel> get generos {
-    _$generosAtom.reportRead();
-    return super.generos;
+  List<MusicalGenreModel> get genres {
+    _$genresAtom.reportRead();
+    return super.genres;
   }
 
   @override
-  set generos(List<GeneroModel> value) {
-    _$generosAtom.reportWrite(value, super.generos, () {
-      super.generos = value;
+  set genres(List<MusicalGenreModel> value) {
+    _$genresAtom.reportWrite(value, super.genres, () {
+      super.genres = value;
     });
   }
 
-  final _$faixaAtom = Atom(name: '_PlayerMusicControllerBase.faixa');
+  late final _$faixaAtom =
+      Atom(name: '_PlayerMusicControllerBase.faixa', context: context);
 
   @override
   int get faixa {
@@ -121,8 +125,24 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
     });
   }
 
-  final _$audioDurationAtom =
-      Atom(name: '_PlayerMusicControllerBase.audioDuration');
+  late final _$faixaFilaAtom =
+      Atom(name: '_PlayerMusicControllerBase.faixaFila', context: context);
+
+  @override
+  int get faixaFila {
+    _$faixaFilaAtom.reportRead();
+    return super.faixaFila;
+  }
+
+  @override
+  set faixaFila(int value) {
+    _$faixaFilaAtom.reportWrite(value, super.faixaFila, () {
+      super.faixaFila = value;
+    });
+  }
+
+  late final _$audioDurationAtom =
+      Atom(name: '_PlayerMusicControllerBase.audioDuration', context: context);
 
   @override
   Duration get audioDuration {
@@ -137,8 +157,8 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
     });
   }
 
-  final _$timeToMusicAtom =
-      Atom(name: '_PlayerMusicControllerBase.timeToMusic');
+  late final _$timeToMusicAtom =
+      Atom(name: '_PlayerMusicControllerBase.timeToMusic', context: context);
 
   @override
   Duration get timeToMusic {
@@ -153,8 +173,8 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
     });
   }
 
-  final _$musicPlayingAtom =
-      Atom(name: '_PlayerMusicControllerBase.musicPlaying');
+  late final _$musicPlayingAtom =
+      Atom(name: '_PlayerMusicControllerBase.musicPlaying', context: context);
 
   @override
   bool get musicPlaying {
@@ -169,8 +189,8 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
     });
   }
 
-  final _$audioPlayerAtom =
-      Atom(name: '_PlayerMusicControllerBase.audioPlayer');
+  late final _$audioPlayerAtom =
+      Atom(name: '_PlayerMusicControllerBase.audioPlayer', context: context);
 
   @override
   AudioPlayer get audioPlayer {
@@ -185,32 +205,32 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
     });
   }
 
-  final _$playMusicAsyncAction =
-      AsyncAction('_PlayerMusicControllerBase.playMusic');
+  late final _$playMusicAsyncAction =
+      AsyncAction('_PlayerMusicControllerBase.playMusic', context: context);
 
   @override
   Future<void> playMusic() {
     return _$playMusicAsyncAction.run(() => super.playMusic());
   }
 
-  final _$getAllGenerosAsyncAction =
-      AsyncAction('_PlayerMusicControllerBase.getAllGeneros');
+  late final _$getAllGenresAsyncAction =
+      AsyncAction('_PlayerMusicControllerBase.getAllGenres', context: context);
 
   @override
-  Future<void> getAllGeneros() {
-    return _$getAllGenerosAsyncAction.run(() => super.getAllGeneros());
+  Future<void> getAllGenres() {
+    return _$getAllGenresAsyncAction.run(() => super.getAllGenres());
   }
 
-  final _$getMusicasAsyncAction =
-      AsyncAction('_PlayerMusicControllerBase.getMusicas');
+  late final _$getMusicsAsyncAction =
+      AsyncAction('_PlayerMusicControllerBase.getMusics', context: context);
 
   @override
-  Future<void> getMusicas(String genero) {
-    return _$getMusicasAsyncAction.run(() => super.getMusicas(genero));
+  Future<void> getMusics(MusicalGenreModel genre) {
+    return _$getMusicsAsyncAction.run(() => super.getMusics(genre));
   }
 
-  final _$_PlayerMusicControllerBaseActionController =
-      ActionController(name: '_PlayerMusicControllerBase');
+  late final _$_PlayerMusicControllerBaseActionController =
+      ActionController(name: '_PlayerMusicControllerBase', context: context);
 
   @override
   Future<bool> addOrRemoveQueue(int index) {
@@ -224,7 +244,7 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
   }
 
   @override
-  void activeShuffle({bool active}) {
+  void activeShuffle({bool active = false}) {
     final _$actionInfo = _$_PlayerMusicControllerBaseActionController
         .startAction(name: '_PlayerMusicControllerBase.activeShuffle');
     try {
@@ -295,8 +315,9 @@ mixin _$PlayerMusicController on _PlayerMusicControllerBase, Store {
 shuffle: ${shuffle},
 changingMusic: ${changingMusic},
 musicas: ${musicas},
-generos: ${generos},
+genres: ${genres},
 faixa: ${faixa},
+faixaFila: ${faixaFila},
 audioDuration: ${audioDuration},
 timeToMusic: ${timeToMusic},
 musicPlaying: ${musicPlaying},

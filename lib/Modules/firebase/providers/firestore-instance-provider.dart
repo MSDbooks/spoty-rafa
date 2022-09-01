@@ -4,12 +4,12 @@ class FirestoreInstanceProvider {
 
   final firestore = FirebaseFirestore.instance;
 
-  static FirestoreInstanceProvider _instanceSingleton;
+  static FirestoreInstanceProvider? _instanceSingleton;
 
   factory FirestoreInstanceProvider() {
     _instanceSingleton ??= FirestoreInstanceProvider._internalConstructor();
 
-    return _instanceSingleton;
+    return _instanceSingleton!;
   }
 
   FirestoreInstanceProvider._internalConstructor();

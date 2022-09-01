@@ -1,9 +1,9 @@
 
 class MusicModel{
-  String nome;
-  String banda;
-  String url;
-  bool addqueue;
+  String? nome;
+  String? banda;
+  String? url;
+  bool? addqueue;
 
   MusicModel({
     this.nome,

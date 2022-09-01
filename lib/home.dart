@@ -15,7 +15,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    _controller.getAllGeneros();
+    _controller.getAllGenres();
     
   }
 
@@ -35,20 +35,20 @@ class _HomeState extends State<Home> {
       body: Observer(
         builder: (_){
           return   ListView.builder(
-            itemCount: _controller.generos.length,
+            itemCount: _controller.genres.length,
             itemBuilder: (_, index){
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: NetworkImage(_controller.generos[index].imageurl),
+                  backgroundImage: NetworkImage(_controller.genres[index].frontCover!),
                 ),
-                title: Text(_controller.generos[index].nome),
+                title: Text(_controller.genres[index].name!),
                 subtitle: Text('Detalhe musica'),
                 contentPadding: EdgeInsets.all(10),
                 onTap: (){
                   Navigator.of(context)
                     .push(
                       MaterialPageRoute(
-                        builder: (context) => PlayerMusic(genero: _controller.generos[index])
+                        builder: (context) => PlayerMusic(genre: _controller.genres[index])
                       )
                   );
                 },

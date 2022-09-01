@@ -1,37 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:spotRafa/Modules/player_music/Models/genero_model.dart';
 import 'package:spotRafa/Views/player_music/player_music_controller.dart';
 import 'package:spotRafa/Views/shared/app_config.dart';
 
+import '../../Modules/firebase/models/musical_genre_model.dart';
+
 class ListMusicPage extends StatefulWidget {
 
-  final GeneroModel genre;
+  final MusicalGenreModel genre;
   final PlayerMusicController controller;
-  const ListMusicPage({Key key, @required this.genre, @required this.controller}) : super(key: key);
+  const ListMusicPage({Key? key, required this.genre, required this.controller}) : super(key: key);
   @override
   _ListMusicPageState createState() => _ListMusicPageState();
 }
 
 class _ListMusicPageState extends State<ListMusicPage> {
 
-  AppConfig _ac;
-
   @override
   Widget build(BuildContext context) {
-    _ac = AppConfig(context);
+   AppConfig _ac = AppConfig(context);
     return SafeArea(
       bottom: false,
       top: false,
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text('${widget.genre.nome}'),
+          title: Text('${widget.genre.name}'),
           actions: [
             Padding(
               padding: EdgeInsets.only(right: _ac.rWP(5)),
               child: CircleAvatar(
-                backgroundImage: NetworkImage(widget.genre.imageurl),
+                backgroundImage: NetworkImage(widget.genre.frontCover!),
               ),
             ),
           ],
@@ -65,7 +64,7 @@ class _ListMusicPageState extends State<ListMusicPage> {
                       backgroundColor: Colors.black,
                     ));
                   },
-                  trailing: widget.controller.musicas[index].addqueue 
+                  trailing: widget.controller.musicas[index].addqueue! 
                   ? Icon(
                     Icons.assignment_turned_in,
                     color: Colors.green[100],

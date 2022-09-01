@@ -2,15 +2,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:seekbar/seekbar.dart';
-import 'package:spotRafa/Modules/player_music/Models/genero_model.dart';
 import 'package:spotRafa/Views/list_music/list_music_page.dart';
 import 'package:spotRafa/Views/player_music/player_music_controller.dart';
 
+import '../../Modules/firebase/models/musical_genre_model.dart';
+
 class PlayerMusic extends StatefulWidget {
 
-  final GeneroModel genero;
+  final MusicalGenreModel genre;
 
-  const PlayerMusic({Key key, @required this.genero}) : super(key: key);
+  const PlayerMusic({Key? key, required this.genre}) : super(key: key);
 
   @override
   _PlayerMusicState createState() => _PlayerMusicState();
@@ -18,15 +19,14 @@ class PlayerMusic extends StatefulWidget {
 
 class _PlayerMusicState extends State<PlayerMusic> {
 
-  double _appWidth;
-  double _appHeight;
-  Timer _onStoppedTyping;
-  PlayerMusicController _controller;
+  double? _appWidth;
+  double? _appHeight;
+  Timer? _onStoppedTyping;
+  final _controller = PlayerMusicController();
   @override
   void initState() {
     super.initState();
-    _controller = PlayerMusicController();
-    _controller.getMusicas(widget.genero.nome);
+    _controller.getMusics(widget.genre);
     _controller.audioPlayer.onAudioPositionChanged.listen((d){
       _controller.changeTimeTiMusic(d);
     });
@@ -100,19 +100,19 @@ class _PlayerMusicState extends State<PlayerMusic> {
   
   Widget _buildImageheader(){
     return Container(
-      margin: EdgeInsets.only(left: _appWidth / 50, right: _appWidth / 50, top: _appHeight / 90),
+      margin: EdgeInsets.only(left: (_appWidth! / 50), right: _appWidth! / 50, top: _appHeight! / 90),
       child: Container(
         width: MediaQuery.of(context).size.width,
         height: 300,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: NetworkImage(widget.genero.imageurl),
+            image: NetworkImage(widget.genre.frontCover!),
             fit: BoxFit.cover
           ),
           borderRadius: BorderRadius.circular(2),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey[700],
+              color: Colors.grey[700]!,
               blurRadius: 15,
               offset: Offset(2,5)
             )
@@ -129,7 +129,7 @@ class _PlayerMusicState extends State<PlayerMusic> {
           children: [
             Container(
               child: Text(
-                _controller.musicas.length == 0  ? '-' : _controller.musicas[_controller.faixa].nome,
+                _controller.musicas.length == 0  ? '-' : _controller.musicas[_controller.faixa].nome!,
                 style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.bold
@@ -138,7 +138,7 @@ class _PlayerMusicState extends State<PlayerMusic> {
             ),
             Container(
               child: Text(
-                _controller.musicas.length == 0  ? '-' : _controller.musicas[_controller.faixa].banda,
+                _controller.musicas.length == 0  ? '-' : _controller.musicas[_controller.faixa].banda!,
                 style: TextStyle(
                   fontSize: 15,
                 ),
@@ -156,7 +156,7 @@ class _PlayerMusicState extends State<PlayerMusic> {
         return Column(
           children: [
             Container(
-              padding: EdgeInsets.only(left: _appWidth / 15, right: _appWidth / 15, top: _appHeight / 30),
+              padding: EdgeInsets.only(left: _appWidth! / 15, right: _appWidth! / 15, top: _appHeight! / 30),
               child: SeekBar(
                 value: _controller.progressDuration,
                 onStartTrackingTouch:(){},
@@ -166,7 +166,7 @@ class _PlayerMusicState extends State<PlayerMusic> {
               ),
             ),
             Container(
-              padding: EdgeInsets.only(left: _appWidth / 15, right: _appWidth/ 15),
+              padding: EdgeInsets.only(left: _appWidth! / 15, right: _appWidth! / 15),
               child: Row(
                 children: [
                   Text(_controller.getTimeToMusic),
@@ -182,7 +182,7 @@ class _PlayerMusicState extends State<PlayerMusic> {
 
   Widget _buildButtons(){
     return Padding(
-      padding: EdgeInsets.only(top: _appHeight / 60, right: _appWidth / 20, left: _appWidth / 30),
+      padding: EdgeInsets.only(top: _appHeight! / 60, right: _appWidth! / 20, left: _appWidth! / 30),
       child: Container(
         child: Row(
           children: [
@@ -252,7 +252,7 @@ class _PlayerMusicState extends State<PlayerMusic> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ListMusicPage(genre: widget.genero, controller: _controller)
+                      builder: (context) => ListMusicPage(genre: widget.genre, controller: _controller)
                     )
                   );
                 }

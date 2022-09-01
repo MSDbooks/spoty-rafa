@@ -5,8 +5,9 @@ import 'package:audioplayer/audioplayer.dart';
 import 'package:mobx/mobx.dart';
 import 'package:spotRafa/Modules/firebase/repositories/firebase-auth-repository.dart';
 import 'package:spotRafa/Modules/firebase/repositories/firestore-repository.dart';
-import 'package:spotRafa/Modules/player_music/Models/genero_model.dart';
 import 'package:spotRafa/Modules/player_music/Models/music_model.dart';
+
+import '../../Modules/firebase/models/musical_genre_model.dart';
 
 part 'player_music_controller.g.dart';
 
@@ -28,8 +29,8 @@ abstract class _PlayerMusicControllerBase with Store {
 
    @action
   Future<bool> addOrRemoveQueue(int index){
-    musicas[index].addqueue = !musicas[index].addqueue;
-    if(musicas[index].addqueue){
+    musicas[index].addqueue = !musicas[index].addqueue!;
+    if(musicas[index].addqueue!){
       _musicsAddQueue.add(index);
     }else{
       _musicsAddQueue.removeWhere((musicIndex) =>  musicIndex == index);
@@ -42,7 +43,7 @@ abstract class _PlayerMusicControllerBase with Store {
   @observable
   bool shuffle = false;
   @action
-  void activeShuffle({bool active}){
+  void activeShuffle({bool active = false}){
     shuffle = active;
     
     if(!shuffle){
@@ -57,7 +58,7 @@ abstract class _PlayerMusicControllerBase with Store {
   List<MusicModel> musicas = <MusicModel>[];
 
   @observable
-  List<GeneroModel> generos = <GeneroModel>[];
+  List<MusicalGenreModel> genres = <MusicalGenreModel>[];
 
   @observable
   int faixa = 0;
@@ -154,8 +155,8 @@ abstract class _PlayerMusicControllerBase with Store {
           var rng = new Random(musicas.length);
           while(_sair){
             var _idFaixa = rng.nextInt(musicas.length);
-            var _musicaJaTocada = musicasTocadasShuffle.firstWhere((a) => a == _idFaixa, orElse: () => null);
-            if(_musicaJaTocada == null){
+            var _musicaJaTocada = musicasTocadasShuffle.firstWhere((a) => a == _idFaixa, orElse: () => -1);
+            if(_musicaJaTocada == -1){
               faixa = _idFaixa;
               _sair = false;
               musicasTocadasShuffle.add(_idFaixa);
@@ -200,62 +201,14 @@ abstract class _PlayerMusicControllerBase with Store {
   }
   
    @action
-  Future<void> getAllGeneros() async{
-    
-    var _generos = await _firestore.getGenerosMusica();
-    
-    var _listGeneros = <GeneroModel>[];
-    _generos.forEach((genero) {
-        
-      var _nomeGenero = genero == 'axe'
-                                  ? 'Axé'
-                                  : genero == 'flash-back'
-                                  ? 'Flash back'
-                                  : genero == 'funk'
-                                  ? 'Funk' 
-                                  : genero == 'rock-nacional' 
-                                  ? 'Rock Nacional' 
-                                  : genero == 'popero'
-                                  ? 'Popero' 
-                                  : 'diversos';
-       
-       var _urlGenero = genero == 'axe'
-                                  ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Faxe.png?alt=media&token=8110c569-2249-4442-aefa-278ff7b7c08b'
-                                  : genero == 'flash-back'
-                                  ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Fflashback.jpg?alt=media&token=39fc7827-b25d-4cee-8a14-2a5333d35653'
-                                  : genero == 'funk'
-                                  ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Ffunk2000.jpg?alt=media&token=e2e99ac1-f81c-4434-8f77-1331548d0d96' 
-                                  : genero == 'rock-nacional' 
-                                  ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Frocknacional.jpg?alt=media&token=f44756a2-e61e-4e13-903f-2e4e20b50eab' 
-                                  : genero == 'popero' 
-                                  ? 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Fpopero.jpg?alt=media&token=266646b3-0c93-4b67-b7f8-88f6ac01ae15' 
-                                  : 'https://firebasestorage.googleapis.com/v0/b/spoty-rafa.appspot.com/o/img%2Fmusicas.png?alt=media&token=4cc1788f-34ff-4e14-8ab8-ab9b40fc4d39';
-      _listGeneros.add(GeneroModel(
-        nome: _nomeGenero,
-        imageurl: _urlGenero
-      ));
-     });
-     generos = _listGeneros;
-
+  Future<void> getAllGenres() async{
+    var response = await _firestore.getGenerosMusica();
+     genres = response;
   }
 
   @action
-  Future<void> getMusicas(String genero) async{
-
-    var _document = genero == 'Axé'
-                                  ? 'axe'
-                                  : genero == 'Flash back'
-                                  ? 'flash-back'
-                                  : genero == 'Funk'
-                                  ? 'funk' 
-                                  : genero == 'Rock Nacional' 
-                                  ? 'rock-nacional' 
-                                  : genero == 'Popero' 
-                                  ? 'popero' : 'diversos';
-
-    var _musicas = await _firestore.getMusicas(_document); 
+  Future<void> getMusics(MusicalGenreModel genre) async{
+    var _musicas = await _firestore.getMusicas(genre.documentId!); 
     musicas = _musicas;                         
-
   }
-
 }

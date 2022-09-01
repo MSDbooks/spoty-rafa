@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseAuthProvider  {
-  static FirebaseAuthProvider _instance;
+  static FirebaseAuthProvider? _instance;
   factory FirebaseAuthProvider() {
     _instance ??= FirebaseAuthProvider._internalConstructor();
-    return _instance;
+    return _instance!;
   }
 
   FirebaseAuthProvider._internalConstructor();
@@ -14,8 +14,8 @@ class FirebaseAuthProvider  {
   Future<bool> signInSnonymousAsync() async {
 
     try{
-       var _result = await _firebaseAuth.signInAnonymously();
-       return _result != null;
+       await _firebaseAuth.signInAnonymously();
+       return true;
     }catch(e){
       print(e.toString());
       return false;

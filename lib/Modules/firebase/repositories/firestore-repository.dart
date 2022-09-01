@@ -1,18 +1,24 @@
 import 'package:spotRafa/Modules/firebase/providers/firestore-instance-provider.dart';
 import 'package:spotRafa/Modules/player_music/Models/music_model.dart';
 
+import '../models/musical_genre_model.dart';
+
 class FirestoreRepository{
 
   final FirestoreInstanceProvider _instance = FirestoreInstanceProvider();
 
-  Future<List<String>> getGenerosMusica() async {
-    var _list = <String>[];
+  Future<List<MusicalGenreModel>> getGenerosMusica() async {
+    
+    var _list = <MusicalGenreModel>[];
     await _instance.firestore.collection('genero-musical')
       .get()
       .then((snapshots) {
         snapshots.docs.forEach((item) {
-          var _nome = item.id;
-          _list.add(_nome);
+          if(item.exists){
+            var data = MusicalGenreModel.fromJson(item.data());
+            data.documentId = item.id;
+            _list.add(data);
+          }
         });
       });
       return _list;
